@@ -1,0 +1,44 @@
+version: '2'
+
+services:
+  postgres:
+    container_name: HV_DATABASE
+    image: postgres
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: IaMBoNdSuppanatE5E6E7
+      PGDATA: /data/postgres
+    volumes:
+       - ./postgres/data:/data/postgres
+    ports:
+      - "5432:5432"
+    networks:
+      hv-network:
+        ipv4_address: ${POSTGRES_IP}
+    restart: unless-stopped
+  
+  pgadmin:
+    container_name: HV_DBMS
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: IaMBoNdSuppanatE5E6E7
+    volumes:
+       - ./pgadmin:/root/.pgadmin
+    ports:
+      - "5050:80"
+    depends_on:
+     - postgres
+    networks:
+      hv-network:
+        ipv4_address: ${PG_ADMIN_IP}
+    restart: unless-stopped
+
+networks:
+  hv-network:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: ${HV_SUBNET}
+          gateway: ${HV_GATEWAY}
